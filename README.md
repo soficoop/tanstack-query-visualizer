@@ -1,3 +1,3 @@
-# React + TypeScript + Vite + shadcn/ui
+# Tanstack Query Visualizer
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+A web app for visualizing and experimenting with TanStack Query keys, queries, and mutations.
