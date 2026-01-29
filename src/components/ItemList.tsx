@@ -1,6 +1,6 @@
 export function ItemList({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-4 w-full items-center pb-10">
+    <div className="flex w-full flex-col items-center gap-4 pb-10">
       {children}
     </div>
   );
