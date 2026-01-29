@@ -21,8 +21,12 @@ function isPlainObject(val: unknown): val is object {
 }
 
 function stringifyKeyPart(value: unknown): string {
-  if (value === undefined) return "undefined";
-  if (value === null) return "null";
+  if (value === undefined) {
+    return "undefined";
+  }
+  if (value === null) {
+    return "null";
+  }
 
   if (typeof value === "string") {
     return `'${value}'`;
@@ -52,6 +56,7 @@ function toStringTQueryKeys(list: QueryItem["queryKey"]) {
   return list.map((key, idx) => {
     if (isPlainObject(key)) {
       return (
+        // biome-ignore lint/suspicious/noArrayIndexKey: there is not other key
         <Tooltip key={idx}>
           <TooltipTrigger asChild>
             <span className="cursor-pointer">{"{...}"}</span>
@@ -64,6 +69,7 @@ function toStringTQueryKeys(list: QueryItem["queryKey"]) {
         </Tooltip>
       );
     }
+    // biome-ignore lint/suspicious/noArrayIndexKey: there is not other key
     return <span key={idx}>{stringifyKeyPart(key)}</span>;
   });
 }
@@ -78,6 +84,7 @@ export function QueryKeys({ list, className }: Props) {
     >
       <span>[</span>
       {toStringTQueryKeys(list).map((el, idx, arr) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: there is not other key
         <span key={idx}>
           {el}
           {idx < arr.length - 1 && <span>,&nbsp;</span>}

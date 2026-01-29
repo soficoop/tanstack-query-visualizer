@@ -1,5 +1,14 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "files": { "includes": ["!src/components/ui/*"] },
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"]
+  "files": {
+    "includes": ["!src/components/ui/*", "!src/components/external/*"]
+  },
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "linter": {
+    "rules": {
+      "style": {
+        "useFilenamingConvention": "off"
+      }
+    }
+  }
 }

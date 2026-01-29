@@ -13,13 +13,14 @@ export function MutationEditSheet({ children, current }: Props) {
 
   return (
     <FormSheet
-      children={children}
       current={current}
       FormComponent={QueryItemForm}
       onSave={replaceItem}
       side={"right"}
       title="Edit Mutation"
       toastString={"Mutation Saved"}
-    />
+    >
+      {children}
+    </FormSheet>
   );
 }

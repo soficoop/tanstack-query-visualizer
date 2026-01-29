@@ -11,8 +11,8 @@ import type { QueryItem } from "@/lib/types";
 const KEY = "localStorageData" as const;
 
 interface LocalStorageData {
-  queryList: Array<QueryItem>;
-  mutationList: Array<QueryItem>;
+  queryList: QueryItem[];
+  mutationList: QueryItem[];
 }
 
 const EMPTY: LocalStorageData = {

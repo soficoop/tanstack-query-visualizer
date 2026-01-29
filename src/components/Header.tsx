@@ -1,5 +1,5 @@
+import ShinyText from "@/components/external/ShinyText";
 import { useStorage } from "@/components/providers/StorageProvider";
-import ShinyText from "@/components/ShinyText";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

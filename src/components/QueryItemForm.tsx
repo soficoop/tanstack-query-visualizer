@@ -77,8 +77,8 @@ export const QueryItemForm = forwardRef<
       }}
     >
       <FieldGroup>
-        <form.Field
-          children={(field) => {
+        <form.Field name="label">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
@@ -97,8 +97,7 @@ export const QueryItemForm = forwardRef<
               </Field>
             );
           }}
-          name="label"
-        />
+        </form.Field>
 
         <form.Field mode="array" name="queryKey">
           {(field) => {
@@ -109,9 +108,28 @@ export const QueryItemForm = forwardRef<
                 <FieldLegend variant="label">Query Keys</FieldLegend>
                 <FieldGroup className="flex items-center">
                   {field.state.value.map((_, index) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: not other key
                     <div className="flex items-start gap-2" key={index}>
                       <form.Field
-                        children={(subField) => {
+                        listeners={{
+                          onChange: ({ value }) => {
+                            if (value === "Null") {
+                              form.setFieldValue(
+                                `queryKey[${index}].value`,
+                                "null"
+                              );
+                            }
+                            if (value === "Undefined") {
+                              form.setFieldValue(
+                                `queryKey[${index}].value`,
+                                "undefined"
+                              );
+                            }
+                          },
+                        }}
+                        name={`queryKey[${index}].type`}
+                      >
+                        {(subField) => {
                           const isSubFieldInvalid =
                             subField.state.meta.isTouched &&
                             !subField.state.meta.isValid;
@@ -153,27 +171,46 @@ export const QueryItemForm = forwardRef<
                             </Field>
                           );
                         }}
-                        listeners={{
-                          onChange: ({ value }) => {
-                            if (value === "Null") {
-                              form.setFieldValue(
-                                `queryKey[${index}].value`,
-                                "null"
-                              );
-                            }
-                            if (value === "Undefined") {
-                              form.setFieldValue(
-                                `queryKey[${index}].value`,
-                                "undefined"
-                              );
-                            }
-                          },
-                        }}
-                        name={`queryKey[${index}].type`}
-                      />
+                      </form.Field>
 
                       <form.Field
-                        children={(valueField) => {
+                        name={`queryKey[${index}].value`}
+                        validators={{
+                          onChangeListenTo: [`queryKey[${index}].type`],
+                          // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: typing will stay only in inline
+                          onChange: ({ value }) => {
+                            const type = form.getFieldValue(
+                              `queryKey[${index}].type`
+                            );
+                            if (
+                              type === "Number" &&
+                              (value === "" || Number.isNaN(Number(value)))
+                            ) {
+                              return {
+                                message: "Value must be a valid number",
+                              };
+                            }
+                            if (type === "Object") {
+                              try {
+                                const parsed = JSON.parse(value as string);
+                                if (
+                                  typeof parsed !== "object" ||
+                                  parsed === null ||
+                                  Array.isArray(parsed)
+                                ) {
+                                  return new Error(
+                                    "Value must be a valid JSON object"
+                                  );
+                                }
+                              } catch (e) {
+                                return e;
+                              }
+                            }
+                            return undefined;
+                          },
+                        }}
+                      >
+                        {(valueField) => {
                           const isValueInvalid =
                             valueField.state.meta.isTouched &&
                             !valueField.state.meta.isValid;
@@ -207,49 +244,16 @@ export const QueryItemForm = forwardRef<
                               </InputGroup>
                               {isValueInvalid && (
                                 <FieldError
-                                  errors={valueField.state.meta.errors}
+                                  errors={
+                                    valueField.state.meta.errors as Error[]
+                                  }
                                 />
                               )}
                             </Field>
                           );
                         }}
-                        name={`queryKey[${index}].value`}
-                        validators={{
-                          onChangeListenTo: [`queryKey[${index}].type`],
-                          onChange: ({ value }) => {
-                            const type = form.getFieldValue(
-                              `queryKey[${index}].type`
-                            );
+                      </form.Field>
 
-                            if (
-                              type === "Number" &&
-                              (value === "" || isNaN(Number(value)))
-                            ) {
-                              return {
-                                message: "Value must be a valid number",
-                              };
-                            }
-
-                            if (type === "Object") {
-                              try {
-                                const parsed = JSON.parse(value as string);
-                                if (
-                                  typeof parsed !== "object" ||
-                                  parsed === null ||
-                                  Array.isArray(parsed)
-                                ) {
-                                  return new Error(
-                                    "Value must be a valid JSON object"
-                                  );
-                                }
-                              } catch (e: any) {
-                                return e;
-                              }
-                            }
-                            return undefined;
-                          },
-                        }}
-                      />
                       <Button
                         aria-label={`Remove key ${index + 1}`}
                         className="h-8"
@@ -278,7 +282,7 @@ export const QueryItemForm = forwardRef<
                     <Plus />
                   </Button>
                 </FieldGroup>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                isInvalid && <FieldError errors={field.state.meta.errors} />
               </FieldSet>
             );
           }}
@@ -293,12 +297,18 @@ function queryItemToForm(item: QueryItem): FormValues {
     id: item.id,
     label: item.label,
     queryKey: item.queryKey.map((value) => {
-      if (value === null) return { type: "Null" as const, value: "" };
-      if (value === undefined) return { type: "Undefined" as const, value: "" };
-      if (typeof value === "number")
+      if (value === null) {
+        return { type: "Null" as const, value: "" };
+      }
+      if (value === undefined) {
+        return { type: "Undefined" as const, value: "" };
+      }
+      if (typeof value === "number") {
         return { type: "Number" as const, value: String(value) };
-      if (typeof value === "object")
+      }
+      if (typeof value === "object") {
         return { type: "Object" as const, value: JSON.stringify(value) };
+      }
       return { type: "String" as const, value };
     }),
   };
@@ -318,7 +328,6 @@ function formToQueryItem(form: FormValues) {
           return undefined;
         case "Object":
           return JSON.parse(pair.value as string);
-        case "String":
         default:
           return pair.value;
       }
