@@ -1,10 +1,10 @@
-import type { QueryItem } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { QueryItem } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface Props {
   list: QueryItem["queryKey"];
@@ -54,7 +54,7 @@ function toStringTQueryKeys(list: QueryItem["queryKey"]) {
       return (
         <Tooltip key={idx}>
           <TooltipTrigger asChild>
-            <span className="cursor-pointer">{`{...}`}</span>
+            <span className="cursor-pointer">{"{...}"}</span>
           </TooltipTrigger>
           <TooltipContent>
             <pre className="max-w-xs whitespace-pre-wrap text-xs">
@@ -72,8 +72,8 @@ export function QueryKeys({ list, className }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-wrap justify-start items-center gap-1",
-        className,
+        "flex flex-wrap items-center justify-start gap-1",
+        className
       )}
     >
       <span>[</span>

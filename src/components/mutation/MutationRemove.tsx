@@ -1,8 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
+import { Minus } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useMutationListData } from "@/hooks/useMutationListData";
-import { Minus } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export function MutationRemove({ id }: { id: string }) {
   const { removeItem } = useMutationListData();
@@ -16,10 +16,10 @@ export function MutationRemove({ id }: { id: string }) {
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
       aria-label="Remove"
       onClick={() => mutation.mutate()}
+      size="icon"
+      variant="ghost"
     >
       <Minus />
     </Button>

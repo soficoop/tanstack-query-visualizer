@@ -1,11 +1,8 @@
-import { Plus } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useForm } from "@tanstack/react-form";
+import { Plus, XIcon } from "lucide-react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import type { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
@@ -20,15 +17,16 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { useForm } from "@tanstack/react-form";
-import { forwardRef, useImperativeHandle } from "react";
-import { XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { TypeEnum } from "@/lib/enums";
-import type { QueryItem } from "@/lib/types";
 import { queryItemFormSchema } from "@/lib/schemas";
-import { useRef } from "react";
+import type { QueryItem } from "@/lib/types";
 
 const typeSelect: Array<{ label: TypeEnum; value: TypeEnum }> = [
   { label: "String", value: "String" },
@@ -59,7 +57,7 @@ export const QueryItemForm = forwardRef<
       onSubmit: queryItemFormSchema,
       // TODO onBlur
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       const v = formToQueryItem(value);
       onSubmit(v);
     },
@@ -80,7 +78,6 @@ export const QueryItemForm = forwardRef<
     >
       <FieldGroup>
         <form.Field
-          name="label"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -88,21 +85,22 @@ export const QueryItemForm = forwardRef<
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                 <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
                   autoComplete="off"
+                  id={field.name}
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  value={field.state.value}
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
           }}
+          name="label"
         />
 
-        <form.Field name="queryKey" mode="array">
+        <form.Field mode="array" name="queryKey">
           {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -111,25 +109,8 @@ export const QueryItemForm = forwardRef<
                 <FieldLegend variant="label">Query Keys</FieldLegend>
                 <FieldGroup className="flex items-center">
                   {field.state.value.map((_, index) => (
-                    <div key={index} className="flex gap-2  items-start">
+                    <div className="flex items-start gap-2" key={index}>
                       <form.Field
-                        name={`queryKey[${index}].type`}
-                        listeners={{
-                          onChange: ({ value }) => {
-                            if (value === "Null") {
-                              form.setFieldValue(
-                                `queryKey[${index}].value`,
-                                "null",
-                              );
-                            }
-                            if (value === "Undefined") {
-                              form.setFieldValue(
-                                `queryKey[${index}].value`,
-                                "undefined",
-                              );
-                            }
-                          },
-                        }}
                         children={(subField) => {
                           const isSubFieldInvalid =
                             subField.state.meta.isTouched &&
@@ -141,14 +122,14 @@ export const QueryItemForm = forwardRef<
                             >
                               <Select
                                 name={subField.name}
-                                value={subField.state.value}
                                 onValueChange={(v: string) =>
                                   subField.handleChange(v as TypeEnum)
                                 }
+                                value={subField.state.value}
                               >
                                 <SelectTrigger
-                                  id={`form-QueryItem-type-${index}`}
                                   aria-invalid={isInvalid}
+                                  id={`form-QueryItem-type-${index}`}
                                   ref={(el) => {
                                     selectRefs.current[index] = el;
                                   }}
@@ -172,44 +153,26 @@ export const QueryItemForm = forwardRef<
                             </Field>
                           );
                         }}
+                        listeners={{
+                          onChange: ({ value }) => {
+                            if (value === "Null") {
+                              form.setFieldValue(
+                                `queryKey[${index}].value`,
+                                "null"
+                              );
+                            }
+                            if (value === "Undefined") {
+                              form.setFieldValue(
+                                `queryKey[${index}].value`,
+                                "undefined"
+                              );
+                            }
+                          },
+                        }}
+                        name={`queryKey[${index}].type`}
                       />
 
                       <form.Field
-                        validators={{
-                          onChangeListenTo: [`queryKey[${index}].type`],
-                          onChange: ({ value }) => {
-                            const type = form.getFieldValue(
-                              `queryKey[${index}].type`,
-                            );
-
-                            if (type === "Number") {
-                              if (value === "" || isNaN(Number(value))) {
-                                return {
-                                  message: "Value must be a valid number",
-                                };
-                              }
-                            }
-
-                            if (type === "Object") {
-                              try {
-                                const parsed = JSON.parse(value as string);
-                                if (
-                                  typeof parsed !== "object" ||
-                                  parsed === null ||
-                                  Array.isArray(parsed)
-                                ) {
-                                  return new Error(
-                                    "Value must be a valid JSON object",
-                                  );
-                                }
-                              } catch (e: any) {
-                                return e;
-                              }
-                            }
-                            return undefined;
-                          },
-                        }}
-                        name={`queryKey[${index}].value`}
                         children={(valueField) => {
                           const isValueInvalid =
                             valueField.state.meta.isTouched &&
@@ -221,25 +184,25 @@ export const QueryItemForm = forwardRef<
 
                           return (
                             <Field
-                              data-invalid={isValueInvalid}
                               className="flex-1"
+                              data-invalid={isValueInvalid}
                             >
                               <InputGroup>
                                 <InputGroupInput
+                                  aria-invalid={isValueInvalid}
+                                  autoComplete="off"
+                                  disabled={isDisabled}
                                   id={`form-QueryItem-value-${index}`}
                                   name={valueField.name}
-                                  value={String(valueField.state.value ?? "")}
                                   onBlur={valueField.handleBlur}
                                   onChange={(e) =>
                                     valueField.handleChange(e.target.value)
                                   }
-                                  aria-invalid={isValueInvalid}
                                   placeholder={"Enter value"}
-                                  disabled={isDisabled}
-                                  autoComplete="off"
+                                  value={String(valueField.state.value ?? "")}
                                 />
                                 {field.state.value.length > 1 && (
-                                  <InputGroupAddon align="inline-end"></InputGroupAddon>
+                                  <InputGroupAddon align="inline-end" />
                                 )}
                               </InputGroup>
                               {isValueInvalid && (
@@ -250,23 +213,57 @@ export const QueryItemForm = forwardRef<
                             </Field>
                           );
                         }}
+                        name={`queryKey[${index}].value`}
+                        validators={{
+                          onChangeListenTo: [`queryKey[${index}].type`],
+                          onChange: ({ value }) => {
+                            const type = form.getFieldValue(
+                              `queryKey[${index}].type`
+                            );
+
+                            if (
+                              type === "Number" &&
+                              (value === "" || isNaN(Number(value)))
+                            ) {
+                              return {
+                                message: "Value must be a valid number",
+                              };
+                            }
+
+                            if (type === "Object") {
+                              try {
+                                const parsed = JSON.parse(value as string);
+                                if (
+                                  typeof parsed !== "object" ||
+                                  parsed === null ||
+                                  Array.isArray(parsed)
+                                ) {
+                                  return new Error(
+                                    "Value must be a valid JSON object"
+                                  );
+                                }
+                              } catch (e: any) {
+                                return e;
+                              }
+                            }
+                            return undefined;
+                          },
+                        }}
                       />
                       <Button
-                        type="button"
-                        className="h-8"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => field.removeValue(index)}
                         aria-label={`Remove key ${index + 1}`}
+                        className="h-8"
+                        onClick={() => field.removeValue(index)}
+                        size="icon-xs"
+                        type="button"
+                        variant="ghost"
                       >
                         <XIcon />
                       </Button>
                     </div>
                   ))}
                   <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
+                    disabled={field.state.value.length >= 10}
                     onClick={() => {
                       field.pushValue({ type: "String", value: "" });
                       setTimeout(() => {
@@ -274,7 +271,9 @@ export const QueryItemForm = forwardRef<
                         selectRefs.current[lastIndex - 1]?.focus();
                       }, 0);
                     }}
-                    disabled={field.state.value.length >= 10}
+                    size="icon"
+                    type="button"
+                    variant="outline"
                   >
                     <Plus />
                   </Button>
@@ -300,7 +299,7 @@ function queryItemToForm(item: QueryItem): FormValues {
         return { type: "Number" as const, value: String(value) };
       if (typeof value === "object")
         return { type: "Object" as const, value: JSON.stringify(value) };
-      return { type: "String" as const, value: value };
+      return { type: "String" as const, value };
     }),
   };
 }

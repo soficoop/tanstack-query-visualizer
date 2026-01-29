@@ -1,7 +1,7 @@
-import { useMutationListData } from "@/hooks/useMutationListData";
-import type { QueryItem } from "@/lib/types";
 import { FormSheet } from "@/components/FormSheet";
 import { QueryItemForm } from "@/components/QueryItemForm";
+import { useMutationListData } from "@/hooks/useMutationListData";
+import type { QueryItem } from "@/lib/types";
 
 interface Props {
   current: QueryItem;
@@ -13,13 +13,14 @@ export function QueryEditSheet({ children, current }: Props) {
 
   return (
     <FormSheet
-      side={"left"}
       current={current}
-      children={children}
-      toastString={"Query Saved"}
       FormComponent={QueryItemForm}
       onSave={replaceItem}
+      side={"left"}
       title="Edit Query"
-    />
+      toastString={"Query Saved"}
+    >
+      {children}
+    </FormSheet>
   );
 }

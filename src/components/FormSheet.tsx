@@ -1,3 +1,6 @@
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import type { QueryItemFormHandle } from "@/components/QueryItemForm";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,11 +12,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { toast } from "sonner";
-import { useState, useRef, type ReactNode, useEffect } from "react";
 
 interface FormProps<T> {
-  ref?: React.Ref<any>;
+  ref?: React.Ref<QueryItemFormHandle>;
   defaultValues: T;
   onSubmit: (value: T) => void;
 }
@@ -28,7 +29,7 @@ interface FormSheetProps<T> {
   toastString: string;
 }
 
-export function FormSheet<T, H>({
+export function FormSheet<T>({
   children,
   current,
   toastString,
@@ -37,7 +38,7 @@ export function FormSheet<T, H>({
   title,
   side,
 }: FormSheetProps<T>) {
-  const formRef = useRef<H>(null);
+  const formRef = useRef<QueryItemFormHandle>(null);
   const [open, setOpen] = useState(false);
 
   const handleSubmit = (value: T) => {
@@ -47,10 +48,12 @@ export function FormSheet<T, H>({
   };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "Enter") {
-        (formRef.current as any)?.submit?.();
+        formRef.current?.submit?.();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -58,7 +61,7 @@ export function FormSheet<T, H>({
   }, [open]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="bg-background/60" side={side}>
         {/* This is to remove warning */}
@@ -69,19 +72,16 @@ export function FormSheet<T, H>({
         </SheetHeader>
         <div className="p-4">
           <FormComponent
-            ref={formRef}
             defaultValues={current}
             onSubmit={handleSubmit}
+            ref={formRef}
           />
         </div>
         <SheetFooter>
           <Button asChild variant="outline">
             <SheetClose>Cancel</SheetClose>
           </Button>
-          <Button
-            type="button"
-            onClick={() => (formRef.current as any)?.submit()}
-          >
+          <Button onClick={() => formRef.current?.submit()} type="button">
             Submit
           </Button>
         </SheetFooter>

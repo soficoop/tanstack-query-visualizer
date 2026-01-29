@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
-import type { QueryItem } from "@/lib/types";
-
 import { InteractiveItem } from "@/components/InteractiveItem";
-import { QueryRemove } from "@/components/query/QueryRemove";
 import { QueryEditSheet } from "@/components/query/QueryEditSheet";
+import { QueryRemove } from "@/components/query/QueryRemove";
+import type { QueryItem } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface Props {
   queryItem: QueryItem;
@@ -30,11 +29,11 @@ export function QueryCard({ queryItem }: Props) {
     <InteractiveItem
       className={cn(
         "transition-colors duration-300",
-        highlight && "bg-primary/50!",
+        highlight && "bg-primary/50!"
       )}
       queryItem={queryItem}
-      Sheet={QueryEditSheet}
       remove={<QueryRemove id={queryItem.id} />}
+      Sheet={QueryEditSheet}
     />
   );
 }

@@ -1,16 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { QueryItem } from "@/lib/types";
-
-import { Button } from "@/components/ui/button";
 import { Radiation } from "lucide-react";
+import { InteractiveItem } from "@/components/InteractiveItem";
+import { MutationEditSheet } from "@/components/mutation/MutationEditSheet";
+import { MutationRemove } from "@/components/mutation/MutationRemove";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MutationEditSheet } from "@/components/mutation/MutationEditSheet";
-import { MutationRemove } from "@/components/mutation/MutationRemove";
-import { InteractiveItem } from "@/components/InteractiveItem";
+import type { QueryItem } from "@/lib/types";
 
 interface Props {
   queryItem: QueryItem;
@@ -28,19 +27,16 @@ export function MutationCard({ queryItem }: Props) {
 
   return (
     <InteractiveItem
-      queryItem={queryItem}
-      Sheet={MutationEditSheet}
-      remove={<MutationRemove id={queryItem.id} />}
       actions={
         <Tooltip delayDuration={2000}>
           <TooltipTrigger asChild>
             <Button
-              className="size-10 border-primary! border-2"
-              variant={"outline"}
               aria-label="Invalidate"
+              className="size-10 border-2 border-primary!"
               onClick={() => mutation.mutate()}
+              variant={"outline"}
             >
-              <Radiation className="size-6 text-primary " />
+              <Radiation className="size-6 text-primary" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -48,6 +44,9 @@ export function MutationCard({ queryItem }: Props) {
           </TooltipContent>
         </Tooltip>
       }
+      queryItem={queryItem}
+      remove={<MutationRemove id={queryItem.id} />}
+      Sheet={MutationEditSheet}
     />
   );
 }

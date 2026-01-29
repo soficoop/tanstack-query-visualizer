@@ -1,14 +1,15 @@
-import React, { forwardRef, useMemo, useRef, useLayoutEffect } from "react";
-import { Canvas, useFrame, useThree, type RootState } from "@react-three/fiber";
-import { Color, Mesh, ShaderMaterial, type IUniform } from "three";
+import { Canvas, type RootState, useFrame, useThree } from "@react-three/fiber";
+import type React from "react";
+import { forwardRef, useLayoutEffect, useMemo, useRef } from "react";
+import { Color, type IUniform, type Mesh, type ShaderMaterial } from "three";
 
 type NormalizedRGB = [number, number, number];
 
 const hexToNormalizedRGB = (hex: string): NormalizedRGB => {
   const clean = hex.replace("#", "");
-  const r = parseInt(clean.slice(0, 2), 16) / 255;
-  const g = parseInt(clean.slice(2, 4), 16) / 255;
-  const b = parseInt(clean.slice(4, 6), 16) / 255;
+  const r = Number.parseInt(clean.slice(0, 2), 16) / 255;
+  const g = Number.parseInt(clean.slice(2, 4), 16) / 255;
+  const b = Number.parseInt(clean.slice(4, 6), 16) / 255;
   return [r, g, b];
 };
 
@@ -89,7 +90,7 @@ interface SilkPlaneProps {
 
 const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
   { uniforms },
-  ref,
+  ref
 ) {
   const { viewport } = useThree();
 
@@ -114,9 +115,9 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
     <mesh ref={ref}>
       <planeGeometry args={[1, 1, 1, 1]} />
       <shaderMaterial
+        fragmentShader={fragmentShader}
         uniforms={uniforms}
         vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
       />
     </mesh>
   );
@@ -149,7 +150,7 @@ const Silk: React.FC<SilkProps> = ({
       uRotation: { value: rotation },
       uTime: { value: 0 },
     }),
-    [speed, scale, noiseIntensity, color, rotation],
+    [speed, scale, noiseIntensity, color, rotation]
   );
 
   return (

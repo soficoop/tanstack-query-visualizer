@@ -7,30 +7,30 @@ export function Header({ className }: React.ComponentProps<"header">) {
   const { reset, clear } = useStorage();
 
   return (
-    <header className={cn(" border-b flex items-center p-4 ", className)}>
-      <div className="flex-1 flex gap-4">
-        <Button variant={"secondary"} onClick={clear}>
+    <header className={cn("flex items-center border-b p-4", className)}>
+      <div className="flex flex-1 gap-4">
+        <Button onClick={clear} variant={"secondary"}>
           Clear
         </Button>
-        <Button variant={"secondary"} onClick={reset}>
+        <Button onClick={reset} variant={"secondary"}>
           Reset to default
         </Button>
       </div>
-      <h1 className="flex-1 text-center  text-2xl">
+      <h1 className="flex-1 text-center text-2xl">
         <ShinyText
-          text="Tanstack Query Visualizer"
-          speed={2}
-          delay={0}
           color="#b5b5b5"
-          shineColor="#ffffff"
-          spread={120}
+          delay={0}
           direction="left"
-          yoyo={false}
-          pauseOnHover={false}
           disabled={false}
+          pauseOnHover={false}
+          shineColor="#ffffff"
+          speed={2}
+          spread={120}
+          text="Tanstack Query Visualizer"
+          yoyo={false}
         />
       </h1>
-      <div className="flex-1"></div>
+      <div className="flex-1" />
     </header>
   );
 }

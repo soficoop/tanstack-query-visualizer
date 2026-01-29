@@ -1,5 +1,5 @@
-import { typeEnum } from "@/lib/enums";
 import { z } from "zod";
+import { typeEnum } from "@/lib/enums";
 
 const unionSchema = z.union([
   z.string(),
