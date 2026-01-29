@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MutationList } from "./components/mutation/MutationList";
-import { QueryList } from "./components/query/QueryList";
-import { StorageProvider } from "./components/providers/StorageProvider";
-import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Header } from "@/components/Header";
-import { Separator } from "@/components/ui/separator";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import Silk from "@/components/Silk";
+import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
+import { MutationList } from "./components/mutation/MutationList";
+import { StorageProvider } from "./components/providers/StorageProvider";
+import { QueryList } from "./components/query/QueryList";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,6 +16,7 @@ const queryClient = new QueryClient({
       },
     },
     mutations: {
+      // biome-ignore lint/suspicious/useAwait: this func is just a placeholder
       mutationFn: async () => {
         return "";
       },
@@ -36,21 +37,21 @@ function Section({
   speed: number;
 }) {
   return (
-    <div className=" relative flex-1 flex flex-col items-center justify-start w-full">
+    <div className="relative flex w-full flex-1 flex-col items-center justify-start">
       {/* BG */}
-      <div className="absolute top-0 left-0 w-full h-full -z-50 ">
+      <div className="absolute top-0 left-0 -z-50 h-full w-full">
         <Silk
-          speed={speed}
-          scale={0.6}
           color={rgb}
           noiseIntensity={0.8}
           rotation={rotation}
+          scale={0.6}
+          speed={speed}
         />
       </div>
 
       {/* Overlay */}
       <div
-        className=" absolute w-full h-full -z-40"
+        className="absolute -z-40 h-full w-full"
         style={{
           background:
             "radial-gradient(circle,rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1)  70%)",
@@ -68,14 +69,14 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <StorageProvider>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <main className="flex flex-col h-screen w-screen">
+          <main className="flex h-screen w-screen flex-col">
             <Header />
-            <div className="flex-1 flex gap-4 px-4">
-              <Section speed={5} rotation={2.1} rgb="#1c71d8" title="Queries">
+            <div className="flex flex-1 gap-4 px-4">
+              <Section rgb="#1c71d8" rotation={2.1} speed={5} title="Queries">
                 <QueryList />
               </Section>
               <Separator className="" orientation="vertical" />
-              <Section rotation={2.6} speed={4} rgb="#a51d2d" title="Mutations">
+              <Section rgb="#a51d2d" rotation={2.6} speed={4} title="Mutations">
                 <MutationList />
               </Section>
             </div>
