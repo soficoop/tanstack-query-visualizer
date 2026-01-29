@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Radiation } from "lucide-react";
+import { toast } from "sonner";
 import { InteractiveItem } from "@/components/InteractiveItem";
 import { MutationEditSheet } from "@/components/mutation/MutationEditSheet";
 import { MutationRemove } from "@/components/mutation/MutationRemove";
@@ -19,9 +20,15 @@ export function MutationCard({ queryItem }: Props) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     onSuccess: () => {
+      const matchingQueries = queryClient.getQueriesData({
+        queryKey: queryItem.queryKey,
+      });
+
       queryClient.invalidateQueries({
         queryKey: queryItem.queryKey,
       });
+
+      toast.warning(`invalided ${matchingQueries.length} queries`);
     },
   });
 
