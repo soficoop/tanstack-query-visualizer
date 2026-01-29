@@ -72,11 +72,21 @@ export function App() {
           <main className="flex h-screen w-screen flex-col">
             <Header />
             <div className="flex flex-1 gap-4 px-4">
-              <Section rgb="#1c71d8" rotation={2.1} speed={5} title="Queries">
+              <Section
+                rgb="#2563eb" // blue-600
+                rotation={2.1}
+                speed={5}
+                title="Queries"
+              >
                 <QueryList />
               </Section>
               <Separator className="" orientation="vertical" />
-              <Section rgb="#a51d2d" rotation={2.6} speed={4} title="Mutations">
+              <Section
+                rgb="#b91c1c" // red-700
+                rotation={2.6}
+                speed={4}
+                title="Mutations"
+              >
                 <MutationList />
               </Section>
             </div>

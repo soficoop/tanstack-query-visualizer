@@ -18,12 +18,12 @@ export function Header({ className }: React.ComponentProps<"header">) {
       </div>
       <h1 className="flex-1 text-center text-2xl">
         <ShinyText
-          color="#b5b5b5"
+          color="#f9fafb" //primary-foreground
           delay={0}
           direction="left"
           disabled={false}
           pauseOnHover={false}
-          shineColor="#ffffff"
+          shineColor="#5227ff" // primary
           speed={2}
           spread={120}
           text="Tanstack Query Visualizer"

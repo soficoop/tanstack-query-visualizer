@@ -29,7 +29,7 @@ export function QueryCard({ queryItem }: Props) {
     <InteractiveItem
       className={cn(
         "transition-colors duration-300",
-        highlight && "bg-primary/50!"
+        highlight && "bg-blue-600/50!"
       )}
       queryItem={queryItem}
       remove={<QueryRemove id={queryItem.id} />}
