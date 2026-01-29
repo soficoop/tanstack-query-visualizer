@@ -19,6 +19,7 @@ export function MutationEditSheet({ children, current }: Props) {
       side={"right"}
       title="Edit Mutation"
       toastString={"Mutation Saved"}
+      variant="red"
     >
       {children}
     </FormSheet>

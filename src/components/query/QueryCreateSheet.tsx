@@ -22,6 +22,7 @@ export function QueryCreateSheet() {
       side="left"
       title="Create Query"
       toastString={"New Query Created"}
+      variant="blue"
     >
       <Button size={"icon-lg"} variant={"ghost"}>
         <Plus className="size-6" />

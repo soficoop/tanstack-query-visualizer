@@ -22,6 +22,7 @@ export function MutationCreateSheet() {
       side="right"
       title="Create Mutation"
       toastString={"New Mutation Created"}
+      variant="red"
     >
       <Button size={"icon-lg"} variant={"ghost"}>
         <Plus className="size-6" />

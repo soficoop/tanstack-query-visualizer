@@ -282,7 +282,7 @@ export const QueryItemForm = forwardRef<
                     <Plus />
                   </Button>
                 </FieldGroup>
-                isInvalid && <FieldError errors={field.state.meta.errors} />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </FieldSet>
             );
           }}

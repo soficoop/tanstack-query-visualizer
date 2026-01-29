@@ -27,10 +27,12 @@ interface FormSheetProps<T> {
   title: string;
   side: React.ComponentProps<typeof SheetContent>["side"];
   toastString: string;
+  variant: "red" | "blue";
 }
 
 export function FormSheet<T>({
   children,
+  variant,
   current,
   toastString,
   FormComponent,
@@ -81,7 +83,11 @@ export function FormSheet<T>({
           <Button asChild variant="outline">
             <SheetClose>Cancel</SheetClose>
           </Button>
-          <Button onClick={() => formRef.current?.submit()} type="button">
+          <Button
+            onClick={() => formRef.current?.submit()}
+            type="button"
+            variant={variant}
+          >
             Submit
           </Button>
         </SheetFooter>

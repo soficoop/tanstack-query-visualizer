@@ -19,6 +19,7 @@ export function QueryEditSheet({ children, current }: Props) {
       side={"left"}
       title="Edit Query"
       toastString={"Query Saved"}
+      variant="blue"
     >
       {children}
     </FormSheet>
