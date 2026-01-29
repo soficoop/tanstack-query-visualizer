@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Radiation } from "lucide-react";
+import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { InteractiveItem } from "@/components/InteractiveItem";
 import { MutationEditSheet } from "@/components/mutation/MutationEditSheet";
@@ -43,7 +43,7 @@ export function MutationCard({ queryItem }: Props) {
               onClick={() => mutation.mutate()}
               variant={"secondary"}
             >
-              <Radiation className="size-6 text-red-700/80" />
+              <Zap className="size-5 text-red-700/80" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
