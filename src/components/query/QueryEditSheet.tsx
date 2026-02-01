@@ -1,6 +1,6 @@
 import { FormSheet } from "@/components/FormSheet";
 import { QueryItemForm } from "@/components/QueryItemForm";
-import { useMutationListData } from "@/hooks/useMutationListData";
+import { useQueryListData } from "@/hooks/useQueryListData";
 import type { QueryItem } from "@/lib/types";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function QueryEditSheet({ children, current }: Props) {
-  const { replaceItem } = useMutationListData();
+  const { replaceItem } = useQueryListData();
 
   return (
     <FormSheet
