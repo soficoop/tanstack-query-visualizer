@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -47,6 +47,35 @@ const DEFAULT_VALUE: LocalStorageData = {
         0,
       ],
     },
+    {
+      id: crypto.randomUUID(),
+      label: "cat #1",
+      queryKey: [{ scope: "cat", entity: "detail", id: 1 }],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list page 0",
+      queryKey: [
+        {
+          scope: "cat",
+          entity: "list",
+          page: 0,
+        },
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list filters page 1",
+      queryKey: [
+        {
+          scope: "cat",
+          entity: "list",
+          search: "orange",
+          orderBy: { date: "ASC" },
+          page: 1,
+        },
+      ],
+    },
   ],
   mutationList: [
     {
@@ -73,6 +102,34 @@ const DEFAULT_VALUE: LocalStorageData = {
         { search: "golden", orderBy: { date: "ASC" } },
         0,
       ],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "all cats",
+      queryKey: [{ scope: "cat" }],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "all cats lists",
+      queryKey: [{ scope: "cat", entity: "list" }],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "specific cat list",
+      queryKey: [
+        {
+          scope: "cat",
+          entity: "list",
+          search: "orange",
+          orderBy: { date: "ASC" },
+          page: 1,
+        },
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "cat #1",
+      queryKey: [{ scope: "cat", entity: "detail", id: 1 }],
     },
   ],
 } as const;

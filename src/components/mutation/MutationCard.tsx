@@ -28,7 +28,7 @@ export function MutationCard({ queryItem }: Props) {
         queryKey: queryItem.queryKey,
       });
 
-      toast.warning(`invalided ${matchingQueries.length} queries`);
+      toast.info(`invalided ${matchingQueries.length} queries`);
     },
   });
 
