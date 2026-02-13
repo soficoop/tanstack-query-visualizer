@@ -1,6 +1,8 @@
+import github from "@/assets/github.png";
 import ShinyText from "@/components/external/ShinyText";
 import { useStorage } from "@/components/providers/StorageProvider";
 import { Button } from "@/components/ui/button";
+import { GITHUB_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function Header({ className }: React.ComponentProps<"header">) {
@@ -30,7 +32,22 @@ export function Header({ className }: React.ComponentProps<"header">) {
           yoyo={false}
         />
       </h1>
-      <div className="flex-1" />
+      <div className="flex flex-1 flex-row-reverse">
+        <a
+          className="inline-block"
+          href={GITHUB_URL}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <img
+            alt="github icon"
+            className="invert"
+            height={24}
+            src={github}
+            width={24}
+          />
+        </a>
+      </div>
     </header>
   );
 }
