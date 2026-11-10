@@ -1,14 +1,14 @@
 {
   "name": "tanstack-query-visualizer",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
     "check": "ultracite check",
-    "fix": "ultracite fix"
+    "dev": "vite",
+    "fix": "ultracite fix",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

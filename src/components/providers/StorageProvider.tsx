@@ -11,72 +11,16 @@ import type { QueryItem } from "@/lib/types";
 const KEY = "localStorageData" as const;
 
 interface LocalStorageData {
-  queryList: QueryItem[];
   mutationList: QueryItem[];
+  queryList: QueryItem[];
 }
 
 const EMPTY: LocalStorageData = {
-  queryList: [],
   mutationList: [],
+  queryList: [],
 } as const;
 
 const DEFAULT_VALUE: LocalStorageData = {
-  queryList: [
-    {
-      id: crypto.randomUUID(),
-      label: "dog #1",
-      queryKey: ["dog", "detail", 1],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "dog #2",
-      queryKey: ["dog", "detail", 2],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "dog list page 2",
-      queryKey: ["dog", "list", {}, 2],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "dog list filters page 0",
-      queryKey: [
-        "dog",
-        "list",
-        { search: "golden", orderBy: { date: "ASC" } },
-        0,
-      ],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "cat #1",
-      queryKey: [{ scope: "cat", entity: "detail", id: 1 }],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "dog list page 0",
-      queryKey: [
-        {
-          scope: "cat",
-          entity: "list",
-          page: 0,
-        },
-      ],
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "dog list filters page 1",
-      queryKey: [
-        {
-          scope: "cat",
-          entity: "list",
-          search: "orange",
-          orderBy: { date: "ASC" },
-          page: 1,
-        },
-      ],
-    },
-  ],
   mutationList: [
     {
       id: crypto.randomUUID(),
@@ -99,7 +43,7 @@ const DEFAULT_VALUE: LocalStorageData = {
       queryKey: [
         "dog",
         "list",
-        { search: "golden", orderBy: { date: "ASC" } },
+        { orderBy: { date: "ASC" }, search: "golden" },
         0,
       ],
     },
@@ -111,34 +55,90 @@ const DEFAULT_VALUE: LocalStorageData = {
     {
       id: crypto.randomUUID(),
       label: "all cats lists",
-      queryKey: [{ scope: "cat", entity: "list" }],
+      queryKey: [{ entity: "list", scope: "cat" }],
     },
     {
       id: crypto.randomUUID(),
       label: "specific cat list",
       queryKey: [
         {
-          scope: "cat",
           entity: "list",
-          search: "orange",
           orderBy: { date: "ASC" },
           page: 1,
+          scope: "cat",
+          search: "orange",
         },
       ],
     },
     {
       id: crypto.randomUUID(),
       label: "cat #1",
-      queryKey: [{ scope: "cat", entity: "detail", id: 1 }],
+      queryKey: [{ entity: "detail", id: 1, scope: "cat" }],
+    },
+  ],
+  queryList: [
+    {
+      id: crypto.randomUUID(),
+      label: "dog #1",
+      queryKey: ["dog", "detail", 1],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog #2",
+      queryKey: ["dog", "detail", 2],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list page 2",
+      queryKey: ["dog", "list", {}, 2],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list filters page 0",
+      queryKey: [
+        "dog",
+        "list",
+        { orderBy: { date: "ASC" }, search: "golden" },
+        0,
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "cat #1",
+      queryKey: [{ entity: "detail", id: 1, scope: "cat" }],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list page 0",
+      queryKey: [
+        {
+          entity: "list",
+          page: 0,
+          scope: "cat",
+        },
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "dog list filters page 1",
+      queryKey: [
+        {
+          entity: "list",
+          orderBy: { date: "ASC" },
+          page: 1,
+          scope: "cat",
+          search: "orange",
+        },
+      ],
     },
   ],
 } as const;
 
 interface StorageContextType {
-  storage: LocalStorageData;
-  setStorage: React.Dispatch<React.SetStateAction<LocalStorageData>>;
   clear: () => void;
   reset: () => void;
+  setStorage: React.Dispatch<React.SetStateAction<LocalStorageData>>;
+  storage: LocalStorageData;
 }
 
 const StorageContext = createContext<StorageContextType | undefined>(undefined);
@@ -163,7 +163,7 @@ export function StorageProvider({ children }: { children: ReactNode }) {
 
   return (
     <StorageContext.Provider
-      value={{ storage: data, setStorage: setData, clear, reset }}
+      value={{ clear, reset, setStorage: setData, storage: data }}
     >
       {children}
     </StorageContext.Provider>

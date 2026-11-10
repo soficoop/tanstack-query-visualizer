@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Minus } from "lucide-react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useQueryListData } from "@/hooks/useQueryListData";
@@ -12,7 +13,7 @@ export function QueryRemove({ queryItem }: Props) {
   const { removeItem } = useQueryListData();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const { mutate } = useMutation({
     mutationFn: async () => {
       queryClient.removeQueries({ queryKey: queryItem.queryKey });
       return await removeItem(queryItem.id);
@@ -22,10 +23,12 @@ export function QueryRemove({ queryItem }: Props) {
     },
   });
 
+  const handleRemove = useCallback(() => mutate(), [mutate]);
+
   return (
     <Button
       aria-label="Remove"
-      onClick={() => mutation.mutate()}
+      onClick={handleRemove}
       size="icon"
       variant="ghost"
     >

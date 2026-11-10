@@ -27,5 +27,5 @@ export function useMutationListData() {
     }));
   };
 
-  return { list: storage.mutationList, pushItem, replaceItem, removeItem };
+  return { list: storage.mutationList, pushItem, removeItem, replaceItem };
 }

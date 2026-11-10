@@ -4,8 +4,8 @@ import { useQueryListData } from "@/hooks/useQueryListData";
 import type { QueryItem } from "@/lib/types";
 
 interface Props {
-  current: QueryItem;
   children: React.ReactNode;
+  current: QueryItem;
 }
 
 export function QueryEditSheet({ children, current }: Props) {

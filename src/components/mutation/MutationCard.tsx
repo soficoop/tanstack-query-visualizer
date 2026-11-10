@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Zap } from "lucide-react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import { InteractiveItem } from "@/components/InteractiveItem";
 import { MutationEditSheet } from "@/components/mutation/MutationEditSheet";
@@ -18,7 +19,7 @@ interface Props {
 
 export function MutationCard({ queryItem }: Props) {
   const queryClient = useQueryClient();
-  const mutation = useMutation({
+  const { mutate } = useMutation({
     onSuccess: () => {
       const matchingQueries = queryClient.getQueriesData({
         queryKey: queryItem.queryKey,
@@ -32,6 +33,8 @@ export function MutationCard({ queryItem }: Props) {
     },
   });
 
+  const handleInvalidate = useCallback(() => mutate(), [mutate]);
+
   return (
     <InteractiveItem
       actions={
@@ -40,7 +43,7 @@ export function MutationCard({ queryItem }: Props) {
             <Button
               aria-label="Invalidate"
               className="size-10"
-              onClick={() => mutation.mutate()}
+              onClick={handleInvalidate}
               variant={"secondary"}
             >
               <Zap className="size-5 text-red-700/80" />

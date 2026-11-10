@@ -1,8 +1,8 @@
 export const typeEnum = {
-  String: "String",
+  Null: "Null",
   Number: "Number",
   Object: "Object",
-  Null: "Null",
+  String: "String",
   Undefined: "Undefined",
 } as const;
 

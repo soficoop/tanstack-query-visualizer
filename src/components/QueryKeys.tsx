@@ -7,8 +7,8 @@ import type { QueryItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface Props {
-  list: QueryItem["queryKey"];
   className?: string;
+  list: QueryItem["queryKey"];
 }
 
 function isPlainObject(val: unknown): val is object {
@@ -62,7 +62,7 @@ function toStringTQueryKeys(list: QueryItem["queryKey"]) {
             <span className="cursor-pointer">{"{...}"}</span>
           </TooltipTrigger>
           <TooltipContent>
-            <pre className="max-w-xs whitespace-pre-wrap text-xs">
+            <pre className="max-w-xs text-xs whitespace-pre-wrap">
               {JSON.stringify(key, null, 2)}
             </pre>
           </TooltipContent>

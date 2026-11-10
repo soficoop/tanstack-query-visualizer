@@ -1,6 +1,6 @@
 import { Canvas, type RootState, useFrame, useThree } from "@react-three/fiber";
 import type React from "react";
-import { forwardRef, useLayoutEffect, useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { Color, type IUniform, type Mesh, type ShaderMaterial } from "three";
 
 type NormalizedRGB = [number, number, number];
@@ -18,11 +18,11 @@ interface UniformValue<T = number | Color> {
 }
 
 interface SilkUniforms {
-  uSpeed: UniformValue<number>;
-  uScale: UniformValue<number>;
-  uNoiseIntensity: UniformValue<number>;
   uColor: UniformValue<Color>;
+  uNoiseIntensity: UniformValue<number>;
   uRotation: UniformValue<number>;
+  uScale: UniformValue<number>;
+  uSpeed: UniformValue<number>;
   uTime: UniformValue<number>;
   [uniform: string]: IUniform;
 }
@@ -85,24 +85,22 @@ void main() {
 `;
 
 interface SilkPlaneProps {
+  ref: React.RefObject<Mesh | null>;
   uniforms: SilkUniforms;
 }
 
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
-  { uniforms },
-  ref
-) {
+function SilkPlane({ uniforms, ref }: SilkPlaneProps) {
   const { viewport } = useThree();
 
   useLayoutEffect(() => {
-    const mesh = ref as React.MutableRefObject<Mesh | null>;
+    const mesh = ref;
     if (mesh.current) {
       mesh.current.scale.set(viewport.width, viewport.height, 1);
     }
   }, [ref, viewport]);
 
   useFrame((_state: RootState, delta: number) => {
-    const mesh = ref as React.MutableRefObject<Mesh | null>;
+    const mesh = ref;
     if (mesh.current) {
       const material = mesh.current.material as ShaderMaterial & {
         uniforms: SilkUniforms;
@@ -113,23 +111,26 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
 
   return (
     <mesh ref={ref}>
+      {/* biome-ignore lint/suspicious/noUnknownAttribute: React Three Fiber geometry accepts constructor args. */}
       <planeGeometry args={[1, 1, 1, 1]} />
       <shaderMaterial
+        // biome-ignore lint/suspicious/noUnknownAttribute: React Three Fiber material accepts shader props.
         fragmentShader={fragmentShader}
+        // biome-ignore lint/suspicious/noUnknownAttribute: React Three Fiber material accepts uniforms.
         uniforms={uniforms}
+        // biome-ignore lint/suspicious/noUnknownAttribute: React Three Fiber material accepts shader props.
         vertexShader={vertexShader}
       />
     </mesh>
   );
-});
-SilkPlane.displayName = "SilkPlane";
+}
 
 export interface SilkProps {
-  speed?: number;
-  scale?: number;
   color?: string;
   noiseIntensity?: number;
   rotation?: number;
+  scale?: number;
+  speed?: number;
 }
 
 const Silk: React.FC<SilkProps> = ({
@@ -143,11 +144,11 @@ const Silk: React.FC<SilkProps> = ({
 
   const uniforms = useMemo<SilkUniforms>(
     () => ({
-      uSpeed: { value: speed },
-      uScale: { value: scale },
-      uNoiseIntensity: { value: noiseIntensity },
       uColor: { value: new Color(...hexToNormalizedRGB(color)) },
+      uNoiseIntensity: { value: noiseIntensity },
       uRotation: { value: rotation },
+      uScale: { value: scale },
+      uSpeed: { value: speed },
       uTime: { value: 0 },
     }),
     [speed, scale, noiseIntensity, color, rotation]

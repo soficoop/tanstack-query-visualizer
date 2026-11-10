@@ -27,5 +27,5 @@ export function useQueryListData() {
     }));
   };
 
-  return { list: storage.queryList, pushItem, replaceItem, removeItem };
+  return { list: storage.queryList, pushItem, removeItem, replaceItem };
 }

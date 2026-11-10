@@ -4,8 +4,8 @@ import { useMutationListData } from "@/hooks/useMutationListData";
 import type { QueryItem } from "@/lib/types";
 
 interface Props {
-  current: QueryItem;
   children: React.ReactNode;
+  current: QueryItem;
 }
 
 export function MutationEditSheet({ children, current }: Props) {

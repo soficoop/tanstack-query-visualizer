@@ -1,6 +1,15 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, XIcon } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  type ChangeEvent,
+  type ComponentProps,
+  type FormEvent,
+  type Ref,
+  type RefObject,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,21 +54,23 @@ export interface QueryItemFormHandle {
 export interface QueryItemFormProps {
   defaultValues: QueryItem;
   onSubmit: (v: QueryItem) => void;
+  ref?: Ref<QueryItemFormHandle>;
 }
 
-export const QueryItemForm = forwardRef<
-  QueryItemFormHandle,
-  QueryItemFormProps
->(({ defaultValues, onSubmit }, ref) => {
+export function QueryItemForm({
+  defaultValues,
+  onSubmit,
+  ref,
+}: QueryItemFormProps) {
   const form = useForm({
     defaultValues: queryItemToForm(defaultValues),
-    validators: {
-      onSubmit: queryItemFormSchema,
-      // TODO onBlur
-    },
     onSubmit: ({ value }) => {
       const v = formToQueryItem(value);
       onSubmit(v);
+    },
+    validators: {
+      onSubmit: queryItemFormSchema,
+      // TODO onBlur
     },
   });
 
@@ -69,13 +80,13 @@ export const QueryItemForm = forwardRef<
     submit: () => form.handleSubmit(),
   }));
 
+  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+    // We never use the form onSubmit handler so we want to disable it's auto actions like the "Enter" key interaction.
+    e.preventDefault();
+  }, []);
+
   return (
-    <form
-      onSubmit={(e) => {
-        // We never use the form onSubmit handler so we want to disable it's auto actions like the "Enter" key interaction.
-        e.preventDefault();
-      }}
-    >
+    <form onSubmit={handleSubmit}>
       <FieldGroup>
         <form.Field name="label">
           {(field) => {
@@ -84,16 +95,18 @@ export const QueryItemForm = forwardRef<
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                <Input
+                <FormValueInput
                   aria-invalid={isInvalid}
                   autoComplete="off"
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onValueChange={field.handleChange}
                   value={field.state.value}
                 />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                {isInvalid ? (
+                  <FieldError errors={field.state.meta.errors} />
+                ) : null}
               </Field>
             );
           }}
@@ -138,36 +151,20 @@ export const QueryItemForm = forwardRef<
                               className="w-30"
                               data-invalid={isSubFieldInvalid}
                             >
-                              <Select
+                              <QueryKeyTypeSelect
+                                index={index}
+                                isInvalid={isInvalid}
                                 name={subField.name}
-                                onValueChange={(v: string) =>
-                                  subField.handleChange(v as TypeEnum)
-                                }
+                                onValueChange={subField.handleChange}
+                                selectRefs={selectRefs}
                                 value={subField.state.value}
-                              >
-                                <SelectTrigger
-                                  aria-invalid={isInvalid}
-                                  id={`form-QueryItem-type-${index}`}
-                                  ref={(el) => {
-                                    selectRefs.current[index] = el;
-                                  }}
-                                >
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent position="item-aligned">
-                                  {typeSelect.map((e) => (
-                                    <SelectItem key={e.value} value={e.value}>
-                                      {e.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              />
 
-                              {isSubFieldInvalid && (
+                              {isSubFieldInvalid ? (
                                 <FieldError
                                   errors={subField.state.meta.errors}
                                 />
-                              )}
+                              ) : null}
                             </Field>
                           );
                         }}
@@ -176,7 +173,6 @@ export const QueryItemForm = forwardRef<
                       <form.Field
                         name={`queryKey[${index}].value`}
                         validators={{
-                          onChangeListenTo: [`queryKey[${index}].type`],
                           // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: typing will stay only in inline
                           onChange: ({ value }) => {
                             const type = form.getFieldValue(
@@ -206,8 +202,8 @@ export const QueryItemForm = forwardRef<
                                 return e;
                               }
                             }
-                            return undefined;
                           },
+                          onChangeListenTo: [`queryKey[${index}].type`],
                         }}
                       >
                         {(valueField) => {
@@ -225,64 +221,49 @@ export const QueryItemForm = forwardRef<
                               data-invalid={isValueInvalid}
                             >
                               <InputGroup>
-                                <InputGroupInput
+                                <FormValueInput
                                   aria-invalid={isValueInvalid}
                                   autoComplete="off"
                                   disabled={isDisabled}
+                                  grouped
                                   id={`form-QueryItem-value-${index}`}
                                   name={valueField.name}
                                   onBlur={valueField.handleBlur}
-                                  onChange={(e) =>
-                                    valueField.handleChange(e.target.value)
-                                  }
+                                  onValueChange={valueField.handleChange}
                                   placeholder={"Enter value"}
                                   value={String(valueField.state.value ?? "")}
                                 />
-                                {field.state.value.length > 1 && (
+                                {field.state.value.length > 1 ? (
                                   <InputGroupAddon align="inline-end" />
-                                )}
+                                ) : null}
                               </InputGroup>
-                              {isValueInvalid && (
+                              {isValueInvalid ? (
                                 <FieldError
                                   errors={
                                     valueField.state.meta.errors as Error[]
                                   }
                                 />
-                              )}
+                              ) : null}
                             </Field>
                           );
                         }}
                       </form.Field>
 
-                      <Button
-                        aria-label={`Remove key ${index + 1}`}
-                        className="h-8"
-                        onClick={() => field.removeValue(index)}
-                        size="icon-xs"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <XIcon />
-                      </Button>
+                      <RemoveQueryKeyButton
+                        index={index}
+                        onRemove={field.removeValue}
+                      />
                     </div>
                   ))}
-                  <Button
-                    disabled={field.state.value.length >= 10}
-                    onClick={() => {
-                      field.pushValue({ type: "String", value: "" });
-                      setTimeout(() => {
-                        const lastIndex = field.state.value.length;
-                        selectRefs.current[lastIndex - 1]?.focus();
-                      }, 0);
-                    }}
-                    size="icon"
-                    type="button"
-                    variant="outline"
-                  >
-                    <Plus />
-                  </Button>
+                  <AddQueryKeyButton
+                    count={field.state.value.length}
+                    onAdd={field.pushValue}
+                    selectRefs={selectRefs}
+                  />
                 </FieldGroup>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                {isInvalid ? (
+                  <FieldError errors={field.state.meta.errors} />
+                ) : null}
               </FieldSet>
             );
           }}
@@ -290,7 +271,124 @@ export const QueryItemForm = forwardRef<
       </FieldGroup>
     </form>
   );
-});
+}
+
+function FormValueInput({
+  grouped = false,
+  onValueChange,
+  ...props
+}: Omit<ComponentProps<typeof Input>, "onChange"> & {
+  grouped?: boolean;
+  onValueChange: (value: string) => void;
+}) {
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      onValueChange(event.target.value);
+    },
+    [onValueChange]
+  );
+  const Component = grouped ? InputGroupInput : Input;
+
+  return <Component {...props} onChange={handleChange} />;
+}
+
+function QueryKeyTypeSelect({
+  index,
+  isInvalid,
+  name,
+  onValueChange,
+  selectRefs,
+  value,
+}: {
+  index: number;
+  isInvalid: boolean;
+  name: string;
+  onValueChange: (value: TypeEnum) => void;
+  selectRefs: RefObject<Array<HTMLButtonElement | null>>;
+  value: TypeEnum;
+}) {
+  const handleValueChange = useCallback(
+    (nextValue: string) => onValueChange(nextValue as TypeEnum),
+    [onValueChange]
+  );
+  const setSelectRef = useCallback(
+    (element: HTMLButtonElement | null) => {
+      selectRefs.current[index] = element;
+    },
+    [index, selectRefs]
+  );
+
+  return (
+    <Select name={name} onValueChange={handleValueChange} value={value}>
+      <SelectTrigger
+        aria-invalid={isInvalid}
+        id={`form-QueryItem-type-${index}`}
+        ref={setSelectRef}
+      >
+        <SelectValue placeholder="Select" />
+      </SelectTrigger>
+      <SelectContent position="item-aligned">
+        {typeSelect.map((entry) => (
+          <SelectItem key={entry.value} value={entry.value}>
+            {entry.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function RemoveQueryKeyButton({
+  index,
+  onRemove,
+}: {
+  index: number;
+  onRemove: (index: number) => void;
+}) {
+  const handleClick = useCallback(() => onRemove(index), [index, onRemove]);
+
+  return (
+    <Button
+      aria-label={`Remove key ${index + 1}`}
+      className="h-8"
+      onClick={handleClick}
+      size="icon-xs"
+      type="button"
+      variant="ghost"
+    >
+      <XIcon />
+    </Button>
+  );
+}
+
+function AddQueryKeyButton({
+  count,
+  onAdd,
+  selectRefs,
+}: {
+  count: number;
+  onAdd: (value: FormValues["queryKey"][number]) => void;
+  selectRefs: RefObject<Array<HTMLButtonElement | null>>;
+}) {
+  const handleClick = useCallback(() => {
+    onAdd({ type: "String", value: "" });
+    setTimeout(() => {
+      selectRefs.current[count]?.focus();
+    }, 0);
+  }, [count, onAdd, selectRefs]);
+
+  return (
+    <Button
+      disabled={count >= 10}
+      onClick={handleClick}
+      size="icon"
+      type="button"
+      variant="outline"
+    >
+      <Plus />
+    </Button>
+  );
+}
 
 function queryItemToForm(item: QueryItem): FormValues {
   return {
@@ -318,7 +416,7 @@ function formToQueryItem(form: FormValues) {
   return {
     id: form.id,
     label: form.label,
-    queryKey: form.queryKey.map((pair) => {
+    queryKey: form.queryKey.map((pair): QueryItem["queryKey"][number] => {
       switch (pair.type) {
         case "Number":
           return Number(pair.value);
@@ -334,5 +432,3 @@ function formToQueryItem(form: FormValues) {
     }),
   };
 }
-
-QueryItemForm.displayName = "QueryItemForm";

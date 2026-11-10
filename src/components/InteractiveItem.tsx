@@ -6,10 +6,10 @@ import type { QueryItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface Props {
+  actions?: React.ReactNode;
+  className?: string;
   queryItem: QueryItem;
   remove: React.ReactNode;
-  className?: string;
-  actions?: React.ReactNode;
   Sheet: React.ComponentType<{ current: QueryItem; children: React.ReactNode }>;
 }
 

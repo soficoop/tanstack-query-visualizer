@@ -10,16 +10,11 @@ import { QueryList } from "./components/query/QueryList";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      queryFn: () => {
-        return "";
-      },
-    },
     mutations: {
-      // biome-ignore lint/suspicious/useAwait: this func is just a placeholder
-      mutationFn: async () => {
-        return "";
-      },
+      mutationFn: async () => "",
+    },
+    queries: {
+      queryFn: () => "",
     },
   },
 });
@@ -64,7 +59,7 @@ function Section({
   );
 }
 
-export function App() {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <StorageProvider>

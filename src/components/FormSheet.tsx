@@ -1,4 +1,10 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import type { QueryItemFormHandle } from "@/components/QueryItemForm";
 import { Button } from "@/components/ui/button";
@@ -14,18 +20,18 @@ import {
 } from "@/components/ui/sheet";
 
 interface FormProps<T> {
-  ref?: React.Ref<QueryItemFormHandle>;
   defaultValues: T;
   onSubmit: (value: T) => void;
+  ref?: React.Ref<QueryItemFormHandle>;
 }
 
 interface FormSheetProps<T> {
-  current: T;
   children: ReactNode;
+  current: T;
   FormComponent: React.ComponentType<FormProps<T>>;
   onSave: (value: T) => void;
-  title: string;
   side: React.ComponentProps<typeof SheetContent>["side"];
+  title: string;
   toastString: string;
   variant: "red" | "blue";
 }
@@ -40,14 +46,21 @@ export function FormSheet<T>({
   title,
   side,
 }: FormSheetProps<T>) {
-  const formRef = useRef<QueryItemFormHandle>(null);
+  const formRef = useRef<QueryItemFormHandle | null>(null);
   const [open, setOpen] = useState(false);
 
-  const handleSubmit = (value: T) => {
-    onSave(value);
-    toast.success(toastString);
-    setOpen(false);
-  };
+  const handleSubmit = useCallback(
+    (value: T) => {
+      onSave(value);
+      toast.success(toastString);
+      setOpen(false);
+    },
+    [onSave, toastString]
+  );
+
+  const submitForm = useCallback(() => {
+    formRef.current?.submit();
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -55,12 +68,12 @@ export function FormSheet<T>({
     }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "Enter") {
-        formRef.current?.submit?.();
+        submitForm();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open]);
+  }, [open, submitForm]);
 
   return (
     <Sheet onOpenChange={setOpen} open={open}>
@@ -83,11 +96,7 @@ export function FormSheet<T>({
           <Button asChild variant="outline">
             <SheetClose>Cancel</SheetClose>
           </Button>
-          <Button
-            onClick={() => formRef.current?.submit()}
-            type="button"
-            variant={variant}
-          >
+          <Button onClick={submitForm} type="button" variant={variant}>
             Submit
           </Button>
         </SheetFooter>
